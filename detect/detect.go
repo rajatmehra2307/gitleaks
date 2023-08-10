@@ -633,6 +633,14 @@ func (d *Detector) addFinding(finding report.Finding) {
 			return
 		}
 	}
+	//Remove the finding if the secret SHA matches
+	if _, ok := d.gitleaksIgnore[finding.SecretSHA]; ok {
+		log.Debug().Msgf("ignoring finding with SecretSHA %s",
+			finding.SecretSHA)
+		return
+	}
+
+	//Check if gitleaksIgnore contains a regex. If it does check if the Secret matches the regex
 
 	if d.baseline != nil && !IsNew(finding, d.baseline) {
 		log.Debug().Msgf("baseline duplicate -- ignoring finding with Fingerprint %s", finding.Fingerprint)
